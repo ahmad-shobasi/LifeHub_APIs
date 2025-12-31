@@ -11,7 +11,26 @@ namespace LifeHub_APIs.services
 {
     public class TokenService(IConfiguration configuration, AppDbContext context)
     {
-        public string GenerateAccessToken(User user)
+        public async Task<LoginResponse> GetTokenResponse(User user)
+        {
+            return new LoginResponse
+            {
+                AccessToken = GenerateAccessToken(user),
+                RefreshToken = await GenerateAndSaveRefreshToken(user),
+                UserName = user.Username,
+                ExpirationDate = new JwtSecurityTokenHandler().ReadJwtToken(GenerateAccessToken(user)).ValidTo
+            };
+        }
+        public async Task<User?> validateRefreshToken(int userId, string refreshToken)
+        {
+            var user = await context.Users.FindAsync(userId);
+            if (user is null || user.RefreshToken != refreshToken
+               || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+                return null;
+            return user;
+        }
+
+        private string GenerateAccessToken(User user)
         {
             var claims = new List<Claim>
             {
@@ -33,7 +52,7 @@ namespace LifeHub_APIs.services
             return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
         }
        
-        public async Task<string> GenerateAndSaveRefreshToken(User user) {
+        private async Task<string> GenerateAndSaveRefreshToken(User user) {
             var refreshToken = GenerateRefreshToken();
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
@@ -41,16 +60,7 @@ namespace LifeHub_APIs.services
             return refreshToken;
         }
 
-        public async Task<LoginResponse> GetTokenResponse(User user) {
-            return new LoginResponse
-            {
-                AccessToken = GenerateAccessToken(user),
-                RefreshToken= await GenerateAndSaveRefreshToken(user),
-                UserName = user.Username,
-                ExpirationDate= new JwtSecurityTokenHandler().ReadJwtToken(GenerateAccessToken(user)).ValidTo
-            };
-        }
-
+        
         private string GenerateRefreshToken()
         {
             var randomNumber = new byte[32];
