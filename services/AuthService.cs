@@ -13,14 +13,19 @@ namespace LifeHub_APIs.services
             var user = await context.Users.FirstOrDefaultAsync(u => u.Username == request.UserName);
             if (user is null)
                 return null;
+
             var requestedPassword = new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, request.Password);
             if (requestedPassword == PasswordVerificationResult.Failed)
                 return null;
+
             return await tokens.GetTokenResponse(user);
         }
-        public async Task<LoginResponse> RefreshTokensAsync(int userId, string refreshToken)
+        public async Task<LoginResponse?> RefreshTokensAsync(int userId, string refreshToken)
         {
-            return new LoginResponse();
+            var user = await tokens.validateRefreshToken(userId, refreshToken);
+            if (user is null)
+                return null;
+            return await tokens.GetTokenResponse(user);
         }
     }
 }
