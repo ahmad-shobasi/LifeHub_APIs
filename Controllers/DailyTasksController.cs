@@ -17,25 +17,43 @@ namespace LifeHub_APIs.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<List<DailyTask>>> GetTasks()
+        public async Task<ActionResult<List<TaskResponseDto>>> GetTasks()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var tasks = await service.GetAllTasksAsync(GetUserId());
-            return Ok(tasks);
+            var tasksDto = new List<TaskResponseDto>();
+            foreach (var task in tasks) { 
+                var newTask = new TaskResponseDto
+                {
+                    Id = task.id,
+                    Title = task.Title,
+                    Description = task.Description,
+                    Proirity = task.priority
+                };
+                tasksDto.Add(newTask);
+            }
+            return Ok(tasksDto);
         }
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<ActionResult<DailyTask?>> GetTaskById(int id)
+        public async Task<ActionResult<TaskResponseDto?>> GetTaskById(int id)
         {
             var task = await service.GetTaskByIdAsync(id, GetUserId());
             return task is null ? BadRequest("No task with givin Id.") : Ok(task);
         }
         [Authorize]
-        [HttpPost]
-        public async Task<ActionResult<DailyTask?>> CreateNewTask(TaskRequestDto request)
+        [HttpPost("create-task")]
+        public async Task<ActionResult<TaskResponseDto?>> CreateNewTask(TaskRequestDto request)
         {
             var createdTask = await service.CreateTaskAsync(request, GetUserId());
             return Ok(createdTask);
         }
+        [Authorize]
+        [HttpPut("update-task/{id}")]
+        public async Task<ActionResult<TaskResponseDto?>> UpdateTask(int id, TaskRequestDto request)
+        {
+            var updatedTask = await service.UpdateTaskAsync(id, request, GetUserId());
+            return updatedTask is null ? BadRequest("No task with givin Id.") : Ok(updatedTask);
+        }
+
     }
 }

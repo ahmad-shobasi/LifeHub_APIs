@@ -34,7 +34,14 @@ namespace LifeHub_APIs.services.DailyTasksServices
         }
         public async Task<DailyTask?> UpdateTaskAsync(int id, TaskRequestDto request, int userId)
         {
-            throw new Exception();
+            var task = await context.Tasks.FirstOrDefaultAsync(t=> t.id == id && t.UserId == userId);
+            if(task is null)
+                return null;
+            task.Title = request.Title;
+            task.Description = request.Description;
+            task.priority = request.priority;
+            await context.SaveChangesAsync();
+            return task;
         }
         public async Task<DailyTask?> DeleteTaskAsync(int id, int userId)
         {
