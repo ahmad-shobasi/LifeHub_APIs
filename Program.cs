@@ -1,5 +1,6 @@
 using LifeHub_APIs.Data;
 using LifeHub_APIs.services;
+using LifeHub_APIs.services.CalendarEventsServices;
 using LifeHub_APIs.services.DailyTasksServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IDailyTasksService, DailyTasksService>();
+builder.Services.AddScoped<ICalendarEventsService, CalendarEventsService>();
+builder.Services.AddScoped<ITestRelations, TestRelationsService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
