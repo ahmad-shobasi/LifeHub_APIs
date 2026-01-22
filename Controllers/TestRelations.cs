@@ -1,4 +1,5 @@
-﻿using LifeHub_APIs.Models.CalendarEvents;
+﻿using LifeHub_APIs.Dtos;
+using LifeHub_APIs.Models.CalendarEvents;
 using LifeHub_APIs.Models.DailyTasks;
 using LifeHub_APIs.services;
 using Microsoft.AspNetCore.Authorization;
@@ -22,7 +23,7 @@ namespace LifeHub_APIs.Controllers
 
         [Authorize]
         [HttpGet("get-user-tasks")]
-        public async Task<ActionResult<List<DailyTask>>> GetUserTasksTest()
+        public async Task<ActionResult<List<TaskResponseDto>>> GetUserTasksTest()
         {
             var tasks = await service.GetUserTasksTest(GetUserId());
             return Ok(tasks);
@@ -30,7 +31,7 @@ namespace LifeHub_APIs.Controllers
 
         [Authorize]
         [HttpGet("get-user-events")]
-        public async Task<ActionResult<List<CalendarEvent>>> GetUserEventsTest()
+        public async Task<ActionResult<List<CalendarEventResponseDto>>> GetUserEventsTest()
         {
             var events = await service.GetUserEventsTest(GetUserId());
             return Ok(events);
