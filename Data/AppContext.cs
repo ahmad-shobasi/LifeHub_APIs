@@ -20,6 +20,10 @@ namespace LifeHub_APIs.Data
                 .HasForeignKey(t => t.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<DailyTask>()
+                .Property(t => t.priority)
+                .HasConversion<string>();
+
             modelBuilder.Entity<CalendarEvent>()
                 .HasOne(e => e.User)
                 .WithMany(u=> u.Events)
