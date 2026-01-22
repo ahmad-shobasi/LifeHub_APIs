@@ -12,12 +12,15 @@ namespace LifeHub_APIs.Controllers
     public class AuthController(IAuthService service) : ControllerBase
     {
         [HttpPost("Register")]
-        public async Task<ActionResult<User?>> Register(LoginDto request)
+        public async Task<ActionResult<UserResponseDto?>> Register(LoginDto request)
         {
             var user = await service.RegisterAsync(request);
-            if(user is null)
-                return BadRequest("user name already exist");
-            return Ok(user);
+            var userDto = user is null ? null : new UserResponseDto
+            {
+                Id = user.Id,
+                UserName = user.Username
+            };
+            return userDto is null ? BadRequest("User name already exist") : Ok(user);
         }
         [HttpPost("Login")]
         public async Task<ActionResult<LoginResponse>> Login(LoginDto request)
