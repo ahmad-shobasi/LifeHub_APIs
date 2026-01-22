@@ -2,9 +2,9 @@
 {
     public enum PriorityFlag
     {
-         ToDo,
-         InProgress,
-         OverDue ,
-         Done 
+         ToDo = 1,
+         InProgress = 2,
+         OverDue = 3,
+         Done = 4
     }
 }
